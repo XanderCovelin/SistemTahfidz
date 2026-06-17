@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Monitor Kelas TKA 1 - Tahfidz BA Admin</title>
+    <meta name="description" content="Monitoring detail aktivitas hafalan kelas TKA 1.">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: { extend: {
+                "colors": { "tertiary": "#003580","primary-fixed": "#a9f3be","on-primary": "#ffffff","surface-tint": "#226b41","surface-bright": "#f8faf9","on-primary-container": "#8ad2a0","secondary-container": "#fe8a29","secondary-fixed-dim": "#ffb786","surface-dim": "#d8dada","surface-container-highest": "#e1e3e2","primary": "#004323","error": "#ba1a1a","on-tertiary-container": "#aac1ff","on-surface": "#191c1c","inverse-surface": "#2e3131","primary-fixed-dim": "#8dd6a3","on-secondary": "#ffffff","surface": "#f8faf9","secondary-fixed": "#ffdcc6","surface-container-high": "#e6e9e8","on-surface-variant": "#404941","outline": "#707a70","on-tertiary-fixed-variant": "#00429c","on-secondary-fixed": "#311300","error-container": "#ffdad6","tertiary-fixed": "#d9e2ff","tertiary-fixed-dim": "#b0c6ff","on-tertiary-fixed": "#001945","background": "#f8faf9","tertiary-container": "#004aae","secondary": "#964900","surface-container-lowest": "#ffffff","on-secondary-container": "#642f00","surface-container-low": "#f2f4f3","on-tertiary": "#ffffff","surface-container": "#eceeed","on-error": "#ffffff","inverse-primary": "#8dd6a3","on-primary-fixed": "#00210e","on-background": "#191c1c","on-secondary-fixed-variant": "#723600","on-primary-fixed-variant": "#00522c","on-error-container": "#93000a","surface-variant": "#e1e3e2","primary-container": "#0d5c34","outline-variant": "#bfc9bf","inverse-on-surface": "#eff1f0" },
+                "borderRadius": {"DEFAULT": "1rem","lg": "2rem","xl": "3rem","full": "9999px"},
+                "spacing": {"base": "8px","margin-mobile": "16px","container-padding-sm": "16px","container-padding-md": "24px","margin-desktop": "48px","gutter": "20px"},
+                "fontFamily": {"label-md": ["Plus Jakarta Sans"],"headline-sm": ["Plus Jakarta Sans"],"body-md": ["Plus Jakarta Sans"],"body-lg": ["Plus Jakarta Sans"],"headline-lg": ["Plus Jakarta Sans"],"headline-md": ["Plus Jakarta Sans"]},
+                "fontSize": { "label-md": ["14px",{"lineHeight":"20px","fontWeight":"600"}],"headline-sm": ["20px",{"lineHeight":"28px","fontWeight":"600"}],"body-md": ["16px",{"lineHeight":"24px","fontWeight":"400"}],"body-lg": ["18px",{"lineHeight":"26px","fontWeight":"500"}],"headline-lg": ["32px",{"lineHeight":"40px","letterSpacing":"-0.02em","fontWeight":"700"}],"headline-md": ["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"700"}] }
+            }}
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8faf9; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+    <script src="../../assets/js/api.js?v=3"></script>
+    <script src="../../assets/js/auth-guard.js?v=3"></script>
+</head>
+<body class="bg-surface-bright text-on-surface antialiased min-h-screen">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-primary shadow-[40px_0_60px_-15px_rgba(0,67,35,0.15)] flex-col py-8 z-50 transform transition-transform duration-300 -translate-x-full md:translate-x-0 hidden md:flex overflow-y-auto"></aside>
+
+    <!-- Top Navigation -->
+    <header class="h-20 w-full md:w-[calc(100%-18rem)] sticky top-0 z-40 bg-white shadow-sm flex justify-between items-center px-4 md:px-margin-desktop md:ml-72 transition-all duration-300">
+            <div class="flex items-center gap-2">
+                <button id="mobile-menu-btn" class="md:hidden p-2 hover:bg-surface-container-high rounded-full transition-all text-on-surface-variant flex-shrink-0">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <!-- Desktop Collapse Button -->
+                <button id="desktop-collapse-btn" class="hidden md:flex p-2 hover:bg-surface-container-high rounded-full transition-all text-on-surface-variant mr-2" title="Lipat Menu">
+                    <span class="material-symbols-outlined">menu_open</span>
+                </button>
+                <a href="dashboard.html" class="p-2 hover:bg-surface-container rounded-full text-on-surface-variant transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    <span class="font-label-md hidden md:inline">Dashboard</span>
+                </a>
+                <div class="h-8 w-px bg-outline-variant mx-2"></div>
+                <h2 class="font-headline-sm font-bold text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">meeting_room</span> 
+                    Kelas TKA 1 - Al Fatih
+                </h2>
+            </div>
+            <div class="flex items-center gap-4">
+                <button id="export-laporan-btn" onclick="exportLaporan()" class="bg-secondary-container text-white px-6 py-2 rounded-full font-label-md shadow-md hover:brightness-110 active:scale-95 transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">download</span> Export Laporan
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="ml-0 md:ml-72 p-margin-mobile md:p-margin-desktop pb-32 w-full md:w-[calc(100%-18rem)] transition-all duration-300">
+            
+            <!-- Hero Stats for Class -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Main KPI -->
+                <div class="lg:col-span-2 bg-gradient-to-br from-primary to-primary-container rounded-[24px] p-8 shadow-xl text-white relative overflow-hidden flex flex-col md:flex-row gap-8 items-center justify-between">
+                    <div class="relative z-10 w-full max-w-md">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span id="wali-kelas-badge" class="px-3 py-1 bg-white/20 rounded-full text-[12px] font-bold">Wali Kelas: -</span>
+                            <span id="jumlah-siswa-badge" class="px-3 py-1 bg-white/20 rounded-full text-[12px] font-bold">- Siswa</span>
+                        </div>
+                        <h3 class="text-headline-lg font-bold mb-2">Tingkat Ketuntasan Hafalan</h3>
+                        <p class="text-body-md opacity-90 mb-6">Secara keseluruhan kelas ini memiliki pencapaian yang sangat baik melebihi target kurikulum bulanan.</p>
+                        <div class="w-full h-4 bg-white/20 rounded-full overflow-hidden">
+                            <div class="h-full bg-white w-0 rounded-full shadow-inner transition-all duration-500" id="progress-bar-fill"></div>
+                        </div>
+                    </div>
+                    <div class="relative z-10 shrink-0 text-center">
+                        <div class="w-32 h-32 rounded-full border-8 border-white/30 flex items-center justify-center text-[42px] font-bold mb-2 mx-auto" id="circular-percentage">
+                            -<span class="text-xl">%</span>
+                        </div>
+                        <p class="font-label-md tracking-wider uppercase">Tuntas</p>
+                    </div>
+                    <!-- Decor -->
+                    <span class="material-symbols-outlined absolute -bottom-10 -left-10 text-[200px] opacity-10">stars</span>
+                </div>
+                <!-- Warning KPI -->
+                <div class="bg-white rounded-[24px] p-8 shadow-md border-t-8 border-error flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="material-symbols-outlined text-error text-[40px]">warning</span>
+                            <span class="px-3 py-1 bg-error-container text-on-error-container rounded-full text-[12px] font-bold">Perlu Perhatian</span>
+                        </div>
+                        <h4 id="perlu-perhatian-count" class="font-headline-md text-on-surface font-bold">- Siswa</h4>
+                        <p class="text-on-surface-variant font-body-md mt-1">Belum mengumpulkan setoran hari ini atau perlu perbaikan.</p>
+                    </div>
+                    <button id="btn-lihat-perlu-perhatian" onclick="filterPerluPerhatian()" class="mt-6 w-full py-3 bg-error-container/30 text-on-error-container hover:bg-error-container font-bold rounded-lg transition-colors">Lihat Detail</button>
+                </div>
+            </div>
+
+            <!-- Detailed Student List -->
+            <div class="bg-surface-container-lowest rounded-[24px] shadow-sm border border-outline-variant/30 overflow-hidden">
+                <div class="p-8 border-b border-outline-variant/30 flex justify-between items-center bg-surface-bright">
+                    <h4 class="font-headline-sm text-primary font-bold">Daftar Siswa & Pencapaian</h4>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant text-[18px]">search</span>
+                        <input type="text" id="search-siswa" oninput="onSearchInput()" class="bg-white border border-outline-variant rounded-full pl-10 pr-4 py-2 text-[14px] focus:ring-1 focus:ring-primary w-64" placeholder="Cari Siswa...">
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-surface-container-low text-on-surface-variant border-b border-outline-variant/50">
+                                <th class="px-8 py-4 font-label-md uppercase tracking-wider text-xs">No</th>
+                                <th class="px-8 py-4 font-label-md uppercase tracking-wider text-xs">Nama Siswa</th>
+                                <th class="px-8 py-4 font-label-md uppercase tracking-wider text-xs">Target Terakhir</th>
+                                <th class="px-8 py-4 font-label-md uppercase tracking-wider text-xs">Pencapaian</th>
+                                <th class="px-8 py-4 font-label-md uppercase tracking-wider text-xs text-right">Aksi Admin</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-outline-variant/30" id="siswa-table-body">
+                            <tr><td colspan="5" class="px-8 py-8 text-center text-on-surface-variant">Memuat data siswa...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-6 border-t border-outline-variant/30 flex justify-center">
+                    <button class="text-tertiary font-bold hover:underline flex items-center gap-1 text-sm">
+                        Muat Semua Siswa <span class="material-symbols-outlined text-[16px]">expand_more</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+    <!-- Detail Setoran Modal -->
+    <div id="detail-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md p-8 shadow-2xl relative border border-gray-100">
+            <h3 class="font-headline-sm text-headline-sm text-primary mb-4">Detail Setoran Siswa</h3>
+            <div class="space-y-4 text-sm text-left">
+                <div>
+                    <label class="block text-xs font-bold text-on-surface-variant uppercase">Nama Siswa</label>
+                    <p id="detail-nama" class="font-semibold text-on-surface text-base"></p>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-on-surface-variant uppercase">Waktu Kirim</label>
+                    <p id="detail-waktu" class="text-on-surface"></p>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-on-surface-variant uppercase">Status</label>
+                    <div id="detail-status" class="mt-1"></div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-on-surface-variant uppercase mb-1">Audio Setoran</label>
+                    <audio id="detail-audio" controls class="w-full bg-surface-container rounded-lg"></audio>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-on-surface-variant uppercase">Catatan Koreksi Guru</label>
+                    <p id="detail-catatan" class="p-3 bg-surface-container-low rounded-lg text-on-surface-variant italic mt-1"></p>
+                </div>
+            </div>
+            <div class="flex justify-end mt-6">
+                <button onclick="closeDetailModal()" class="px-6 py-2.5 bg-surface-container-high text-on-surface rounded-xl font-bold">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    let currentClassData = null;
+    let showOnlyPerluPerhatian = false;
+    let searchQuery = '';
+
+    function onSearchInput() {
+        searchQuery = document.getElementById('search-siswa').value.toLowerCase().trim();
+        renderSiswaTable();
+    }
+
+    function filterPerluPerhatian() {
+        showOnlyPerluPerhatian = !showOnlyPerluPerhatian;
+        const btn = document.getElementById('btn-lihat-perlu-perhatian');
+        if (showOnlyPerluPerhatian) {
+            btn.textContent = 'Tampilkan Semua';
+            btn.className = 'mt-6 w-full py-3 bg-primary/20 text-primary hover:bg-primary/30 font-bold rounded-lg transition-colors';
+        } else {
+            btn.textContent = 'Lihat Detail';
+            btn.className = 'mt-6 w-full py-3 bg-error-container/30 text-on-error-container hover:bg-error-container font-bold rounded-lg transition-colors';
+        }
+        renderSiswaTable();
+    }
+
+    function renderSiswaTable() {
+        if (!currentClassData || !currentClassData.siswa) return;
+        
+        let filtered = currentClassData.siswa;
+        
+        if (showOnlyPerluPerhatian) {
+            filtered = filtered.filter(s => !s.setoran_id || s.status === 'perbaiki');
+        }
+        
+        if (searchQuery) {
+            filtered = filtered.filter(s => 
+                s.nama_lengkap.toLowerCase().includes(searchQuery) || 
+                (s.nama_panggilan && s.nama_panggilan.toLowerCase().includes(searchQuery))
+            );
+        }
+        
+        const tbody = document.getElementById('siswa-table-body');
+        if (filtered.length > 0) {
+            tbody.innerHTML = filtered.map((s, i) => {
+                const initials = (s.nama_panggilan || s.nama_lengkap).split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+                let statusHTML = '';
+                if (s.status === 'diterima') {
+                    statusHTML = '<div class="flex items-center gap-3"><div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden max-w-[120px]"><div class="bg-primary h-full w-[100%]"></div></div><span class="text-xs font-bold text-primary">Diterima</span></div>';
+                } else if (s.status === 'menunggu') {
+                    statusHTML = '<div class="flex items-center gap-3"><div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden max-w-[120px]"><div class="bg-tertiary h-full w-[50%]"></div></div><span class="text-xs font-bold text-tertiary">Menunggu</span></div>';
+                } else if (s.status === 'perbaiki') {
+                    statusHTML = '<div class="flex items-center gap-3"><div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden max-w-[120px]"><div class="bg-secondary h-full w-[30%]"></div></div><span class="text-xs font-bold text-secondary">Perbaiki</span></div>';
+                } else {
+                    statusHTML = '<span class="text-xs text-on-surface-variant">Belum Kumpul</span>';
+                }
+                return `
+                <tr class="hover:bg-surface-bright transition-colors">
+                    <td class="px-8 py-5 text-on-surface-variant">${String(i+1).padStart(2,'0')}</td>
+                    <td class="px-8 py-5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">${initials}</div>
+                            <span class="font-bold text-on-surface">${s.nama_lengkap}</span>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5 text-on-surface-variant text-sm">${s.setoran_id ? 'Ada Setoran' : '-'}</td>
+                    <td class="px-8 py-5">${statusHTML}</td>
+                    <td class="px-8 py-5 text-right">
+                        ${s.setoran_id ? `<button onclick="viewSetoranDetails(${s.siswa_id})" class="text-primary hover:bg-primary/10 px-4 py-1.5 rounded-full text-xs font-bold transition-colors">Detail</button>` : ''}
+                    </td>
+                </tr>`;
+            }).join('');
+        } else {
+            tbody.innerHTML = '<tr><td colspan="5" class="px-8 py-8 text-center text-on-surface-variant">Tidak ada data siswa.</td></tr>';
+        }
+    }
+
+    function viewSetoranDetails(siswaId) {
+        const s = currentClassData.siswa.find(x => x.siswa_id === siswaId);
+        if (!s) return;
+        
+        document.getElementById('detail-nama').textContent = s.nama_lengkap;
+        document.getElementById('detail-waktu').textContent = api.formatDateTime(s.waktu_kirim);
+        
+        const statusMap = {
+            'diterima': '<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-bold">Diterima</span>',
+            'menunggu': '<span class="px-3 py-1 bg-tertiary/10 text-tertiary rounded-full text-xs font-bold">Menunggu</span>',
+            'perbaiki': '<span class="px-3 py-1 bg-secondary/10 text-secondary rounded-full text-xs font-bold">Perbaiki</span>'
+        };
+        document.getElementById('detail-status').innerHTML = statusMap[s.status] || '<span class="text-xs text-on-surface-variant">Belum Kumpul</span>';
+        
+        const audio = document.getElementById('detail-audio');
+        if (s.file_audio) {
+            audio.src = api.toAbsoluteUrl('/' + s.file_audio);
+            audio.style.display = 'block';
+        } else {
+            audio.removeAttribute('src');
+            audio.style.display = 'none';
+        }
+        
+        document.getElementById('detail-catatan').textContent = s.catatan_guru || 'Tidak ada catatan dari guru.';
+        
+        const modal = document.getElementById('detail-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeDetailModal() {
+        const modal = document.getElementById('detail-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.getElementById('detail-audio').pause();
+    }
+
+    function exportLaporan() {
+        if (!currentClassData || !currentClassData.siswa || currentClassData.siswa.length === 0) {
+            api.toast('Tidak ada data untuk diekspor', 'error');
+            return;
+        }
+        const headers = ['No', 'NIS', 'Nama Lengkap', 'Nama Panggilan', 'Status Setoran', 'Waktu Kirim', 'Catatan Guru'];
+        const rows = currentClassData.siswa.map((s, i) => [
+            i + 1,
+            s.nis || '-',
+            s.nama_lengkap || '-',
+            s.nama_panggilan || '-',
+            s.setoran_id ? (s.status || 'menunggu') : 'belum kumpul',
+            s.waktu_kirim || '-',
+            s.catatan_guru || '-'
+        ]);
+        
+        let csvContent = headers.join(',') + '\n' + rows.map(e => e.map(val => `"${String(val).replace(/"/g, '""')}"`).join(',')).join('\n');
+        
+        const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `Laporan_Monitor_Kelas_${(currentClassData.kelas.nama_kelas || 'Kelas').replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+        api.toast('Laporan berhasil diekspor!');
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        const user = await authGuard.protect('admin');
+        if (!user) return;
+
+        const params = new URLSearchParams(window.location.search);
+        const kelasId = params.get('kelas_id') || 1;
+
+        try {
+            const res = await api.get(`/api/admin/monitor-kelas.php?kelas_id=${kelasId}`);
+            currentClassData = res.data;
+
+            // Update header
+            if (currentClassData.kelas) {
+                document.querySelector('h2').innerHTML = `<span class="material-symbols-outlined text-primary">meeting_room</span> Kelas ${currentClassData.kelas.nama_kelas}`;
+                document.getElementById('wali-kelas-badge').textContent = `Wali Kelas: ${currentClassData.kelas.nama_guru || 'Belum Ditentukan'}`;
+            }
+
+            // Update hero stats
+            const totalSiswa = currentClassData.siswa ? currentClassData.siswa.length : 0;
+            const sudahKumpul = currentClassData.siswa ? currentClassData.siswa.filter(s => s.setoran_id).length : 0;
+            const pct = totalSiswa > 0 ? Math.round((sudahKumpul / totalSiswa) * 100) : 0;
+            
+            document.getElementById('circular-percentage').innerHTML = `${pct}<span class="text-xl">%</span>`;
+            document.getElementById('progress-bar-fill').style.width = pct + '%';
+            document.getElementById('jumlah-siswa-badge').textContent = `${totalSiswa} Siswa`;
+
+            // Update warning KPI
+            const perluPerhatianSiswa = currentClassData.siswa ? currentClassData.siswa.filter(s => !s.setoran_id || s.status === 'perbaiki') : [];
+            document.getElementById('perlu-perhatian-count').textContent = `${perluPerhatianSiswa.length} Siswa`;
+
+            // Render table
+            renderSiswaTable();
+        } catch (err) {
+            console.error('Gagal memuat data kelas:', err);
+            api.toast('Gagal memuat data kelas', 'error');
+        }
+    });
+    </script>
+</body>
+</html>

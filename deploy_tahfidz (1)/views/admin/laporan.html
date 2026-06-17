@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Laporan & Rekap - Tahfidz BA Admin</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: { extend: {
+                "colors": { "tertiary": "#003580","primary-fixed": "#a9f3be","on-primary": "#ffffff","primary": "#004323","error": "#ba1a1a","on-surface": "#191c1c","surface-bright": "#f8faf9","surface-container-lowest": "#ffffff","surface-container": "#eceeed","outline-variant": "#bfc9bf","on-surface-variant": "#404941","secondary": "#964900","secondary-container": "#fe8a29" },
+                "borderRadius": {"DEFAULT": "1rem","lg": "1.5rem","full": "9999px"},
+                "fontFamily": {"label-md": ["Plus Jakarta Sans"],"headline-sm": ["Plus Jakarta Sans"],"body-md": ["Plus Jakarta Sans"],"headline-md": ["Plus Jakarta Sans"]},
+                "fontSize": { "label-md": ["14px",{"lineHeight":"20px","fontWeight":"600"}],"headline-sm": ["20px",{"lineHeight":"28px","fontWeight":"600"}],"body-md": ["16px",{"lineHeight":"24px","fontWeight":"400"}],"headline-md": ["24px",{"lineHeight":"32px","fontWeight":"700"}] }
+            }}
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+    <script src="../../assets/js/api.js?v=3"></script>
+    <script src="../../assets/js/auth-guard.js?v=3"></script>
+</head>
+<body class="bg-surface-bright text-on-surface min-h-screen antialiased">
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-primary shadow-[40px_0_60px_-15px_rgba(0,67,35,0.15)] flex-col py-8 z-50 transform transition-transform duration-300 -translate-x-full md:translate-x-0 hidden md:flex overflow-y-auto"></aside>
+
+    <header class="h-20 w-full md:w-[calc(100%-18rem)] sticky top-0 z-40 bg-surface-bright/80 backdrop-blur-md shadow-sm flex justify-between items-center px-4 md:px-12 md:ml-72 transition-all duration-300">
+        <div class="flex items-center gap-3">
+            <button id="mobile-menu-btn" class="md:hidden p-2 hover:bg-surface-container-high rounded-full transition-all text-on-surface-variant">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            <!-- Desktop Collapse Button -->
+            <button id="desktop-collapse-btn" class="hidden md:flex p-2 hover:bg-surface-container-high rounded-full transition-all text-on-surface-variant mr-2" title="Lipat Menu">
+                <span class="material-symbols-outlined">menu_open</span>
+            </button>
+            <h2 class="font-headline-sm text-headline-sm font-bold">Laporan & Rekap</h2>
+        </div>
+    </header>
+
+    <main class="ml-0 md:ml-72 min-h-screen w-full md:w-[calc(100%-18rem)] pb-32 transition-all duration-300">
+
+        <div class="p-6 md:p-12">
+            <div class="mb-8">
+                <h3 class="font-headline-md text-headline-md text-primary mb-2">Unduh Laporan</h3>
+                <p class="font-body-md text-body-md text-on-surface-variant">Generate dan unduh laporan rekapitulasi setoran siswa</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-primary">
+                    <span class="material-symbols-outlined text-primary text-[40px] mb-4">description</span>
+                    <h4 class="font-headline-sm text-headline-sm mb-2">Rekap Setoran Harian</h4>
+                    <p class="font-body-md text-body-md text-on-surface-variant mb-4">Rekap setoran semua kelas per hari</p>
+                    <div class="flex gap-2 mb-4">
+                        <input type="date" id="rekap-tanggal" class="flex-1 py-2 px-3 bg-surface-bright border border-outline-variant rounded-lg text-sm">
+                    </div>
+                    <button onclick="exportRekapHarian()" class="w-full bg-primary text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[20px]">download</span> Unduh CSV
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-tertiary">
+                    <span class="material-symbols-outlined text-tertiary text-[40px] mb-4">calendar_month</span>
+                    <h4 class="font-headline-sm text-headline-sm mb-2">Rekap Bulanan</h4>
+                    <p class="font-body-md text-body-md text-on-surface-variant mb-4">Rekap progres siswa per bulan</p>
+                    <div class="flex gap-2 mb-4">
+                        <select id="rekap-bulan" class="flex-1 py-2 px-3 bg-surface-bright border border-outline-variant rounded-lg text-sm">
+                            <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
+                            <option value="4">April</option><option value="5">Mei</option><option value="6" selected>Juni</option>
+                            <option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option>
+                            <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+                        </select>
+                        <select id="rekap-tahun" class="py-2 px-3 bg-surface-bright border border-outline-variant rounded-lg text-sm">
+                            <option value="2025">2025</option><option value="2026" selected>2026</option>
+                        </select>
+                    </div>
+                    <button onclick="exportRekapBulanan()" class="w-full bg-tertiary text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[20px]">download</span> Unduh CSV
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-secondary">
+                    <span class="material-symbols-outlined text-secondary text-[40px] mb-4">group</span>
+                    <h4 class="font-headline-sm text-headline-sm mb-2">Data Siswa</h4>
+                    <p class="font-body-md text-body-md text-on-surface-variant mb-4">Export daftar seluruh siswa</p>
+                    <button onclick="exportDataSiswa()" class="w-full bg-secondary text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[20px]">download</span> Unduh CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const user = await authGuard.protect('admin');
+        if (!user) return;
+
+        document.getElementById('rekap-tanggal').value = new Date().toISOString().split('T')[0];
+    });
+
+    function arrayToCSV(headers, rows) {
+        const csv = [headers.join(',')];
+        rows.forEach(row => {
+            csv.push(row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','));
+        });
+        return csv.join('\n');
+    }
+
+    function downloadCSV(filename, csvContent) {
+        const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+    }
+
+    async function exportRekapHarian() {
+        try {
+            const tanggal = document.getElementById('rekap-tanggal').value;
+            const res = await api.get(`/api/admin/dashboard-stats.php`);
+            const data = res.data.kelas;
+
+            const headers = ['Kode Kelas', 'Nama Kelas', 'Total Siswa', 'Sudah Kumpul', 'Diterima', 'Menunggu', 'Perbaiki', 'Belum Kumpul', 'Persentase'];
+            const rows = data.map(k => [
+                k.kode_kelas, k.nama_kelas, k.total_siswa, k.sudah_kumpul,
+                k.diterima, k.menunggu, k.perbaiki, k.belum_kumpul,
+                k.total_siswa > 0 ? Math.round((k.sudah_kumpul / k.total_siswa) * 100) + '%' : '0%'
+            ]);
+
+            downloadCSV(`rekap_setoran_${tanggal}.csv`, arrayToCSV(headers, rows));
+            api.toast('Laporan berhasil diunduh');
+        } catch (err) {
+            api.toast('Gagal mengunduh laporan', 'error');
+        }
+    }
+
+    async function exportRekapBulanan() {
+        try {
+            const res = await api.get('/api/admin/dashboard-stats.php');
+            const data = res.data.kelas;
+            const bulan = document.getElementById('rekap-bulan').value;
+            const tahun = document.getElementById('rekap-tahun').value;
+
+            const headers = ['Kode Kelas', 'Nama Kelas', 'Total Siswa', 'Diterima', 'Menunggu', 'Perbaiki'];
+            const rows = data.map(k => [k.kode_kelas, k.nama_kelas, k.total_siswa, k.diterima, k.menunggu, k.perbaiki]);
+
+            downloadCSV(`rekap_bulanan_${bulan}_${tahun}.csv`, arrayToCSV(headers, rows));
+            api.toast('Laporan berhasil diunduh');
+        } catch (err) {
+            api.toast('Gagal mengunduh laporan', 'error');
+        }
+    }
+
+    async function exportDataSiswa() {
+        try {
+            const res = await api.get('/api/admin/daftar-siswa.php?per_page=10000');
+            const data = res.data.data;
+
+            const headers = ['NIS', 'Nama Lengkap', 'Nama Panggilan', 'Jenis Kelamin', 'Kelas'];
+            const rows = data.map(s => [s.nis, s.nama_lengkap, s.nama_panggilan || '-', s.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan', s.nama_kelas]);
+
+            downloadCSV('data_siswa.csv', arrayToCSV(headers, rows));
+            api.toast('Data siswa berhasil diunduh');
+        } catch (err) {
+            console.error(err);
+            api.toast('Gagal mengunduh data', 'error');
+        }
+    }
+    </script>
+</body>
+</html>
